@@ -1,0 +1,46 @@
+theme = 'mini'
+baseURL = 'https://www.davor.se/'
+languageCode = 'en-us'
+title = 'davor.se'
+
+defaultContentLanguage = 'en'
+googleAnalytics = 'G-KRBC0KBH89'
+
+paginate = 3
+
+#[markup.highlight]
+# Hugo Configure Markup
+# More info: https://gohugo.io/getting-started/configuration-markup#
+[markup.tableOfContents]
+guessSyntax = true
+style = "emacs"
+endLevel = 3
+ordered = false
+startLevel = 2
+[markup.goldmark.renderer]
+# needed to render raw HTML (e.g. <sub>, <sup>, <kbd>, <mark>)
+unsafe = true
+
+[social]
+# e.g.
+github = "https://github.com/davorb"
+twitter = "https://x.com/davorb89"
+linkedin = "https://www.linkedin.com/in/davorb89/"
+
+[params]
+author = "Davor Babić"
+bio = "Software Engineer"
+description = "My Blog"
+
+#enableRSS = true
+enableComments = false
+enableGoogleAnalytics = true
+
+# To hidden powerBy message in the page footer, you could set: `showPowerBy = false`, default is `true`
+showPowerBy = false
+# To enable math typesetting , you could set `math = true`, default is `false`
+math = false
+
+hiddenPostSummaryInHomePage = false
+
+copyright = "© 2024 Davor Babić"
