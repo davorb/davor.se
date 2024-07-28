@@ -6,8 +6,15 @@
     <description>Recent content on davor.se</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 09 Jul 2024 12:50:31 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 29 Jul 2024 00:39:30 +0200</lastBuildDate>
     <atom:link href="https://www.davor.se/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Flash Card App for Learning Swedish</title>
+      <link>https://www.davor.se/posts/flash-card-app-for-learning-swedish/</link>
+      <pubDate>Mon, 29 Jul 2024 00:39:30 +0200</pubDate>
+      <guid>https://www.davor.se/posts/flash-card-app-for-learning-swedish/</guid>
+      <description>I threw together some shit&#xA;to learn Swedish words.&#xA;It ain&amp;rsquo;t pretty&#xA;but it fucking works.&#xA;My people wanted it&#xA;so I did it.&#xA;An hour or two of my life.&#xA;https://svenska.davor.se That&amp;rsquo;s where it&amp;rsquo;s at.&#xA;I spewed it on reddit&#xA;and the bastards liked it.&#xA;It&amp;rsquo;s getting used.&#xA;The ones who matter dig it.&#xA;Want more.&#xA;The code is shit&#xA;but it&amp;rsquo;s on Github&#xA;I&amp;rsquo;ll clean it up. Later.</description>
+    </item>
     <item>
       <title>My First Post</title>
       <link>https://www.davor.se/posts/my-first-post/</link>
