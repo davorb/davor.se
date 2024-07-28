@@ -1,4 +1,4 @@
-theme = 'mini'
+theme = 'paper'
 baseURL = 'https://www.davor.se/'
 languageCode = 'en-us'
 title = 'davor.se'
@@ -33,6 +33,7 @@ bio = "Software Engineer"
 description = "My Blog"
 
 #enableRSS = true
+rss = true
 enableComments = false
 enableGoogleAnalytics = true
 
@@ -44,3 +45,6 @@ math = false
 hiddenPostSummaryInHomePage = false
 
 copyright = "© 2024 Davor Babić"
+
+avatar = "davor@davor.se"
+name = "Davor Babić"
