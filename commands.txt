@@ -1,0 +1,142 @@
+# davor.se terminal commands
+#
+# HOW THIS FILE WORKS
+#   == name              starts a command. Everything below it (until the
+#                        next ==) is printed, line by line, when it's typed.
+#   == name, alias       several names for the same command.
+#   == sudo *            a trailing * matches anything after "sudo ".
+#   == *                 fallback for anything unknown. Keep it last.
+#
+#   Lines starting with # are comments and are never printed.
+#   Leading spaces are kept, so indent freely.
+#
+#   [label](url)         prints a clickable link, shown as [label].
+#   {cmd} {args} {input} replaced with the first word, the rest, or everything typed.
+#
+#   @wait 600            pause for 600 ms (dramatic effect).
+#   @open https://...    open a URL.
+#   @clear               clear the screen.
+#   @about               show the main page again.
+#   @history             list commands typed so far.
+#   @matrix              replay the falling characters.
+#   @reboot              replay the whole boot sequence.
+#
+# Exact names are matched before * patterns. Matching ignores case.
+
+== help, ?
+  about      the page you just read
+  projects   things in progress
+  contact    ways to reach a human
+  whoami     identity crisis
+  clear      wipe the screen
+  reboot     start over
+  (there are others. there always are.)
+
+== about, about davor, man davor
+@about
+
+== clear, cls
+@clear
+
+== reboot, restart
+@reboot
+
+== matrix
+@matrix
+
+== history
+@history
+
+== whoami
+guest. davor is the other one.
+
+== ls, dir
+about.txt  projects/  photos/  bike/  todo.txt
+
+== ls projects, ls projects/, projects
+  milksy          baby tracker          [coming soon]
+  image rewind    old photos, new eyes  [coming soon]
+  travel app      where you've been     [working title]
+
+== ls photos, ls photos/, cd photos, cd photos/
+permission denied. ask nicely: [davor@davor.se](mailto:davor@davor.se)
+
+== ls bike, ls bike/, cd bike, cd bike/
+bike/ is currently in the garage. it is always in the garage in winter.
+
+== cat about.txt
+@about
+
+== cat todo.txt
+  1. finish milksy
+  2. finish image rewind
+  3. stop starting new projects
+  4. start new project
+
+== cat *
+cat: {args}: no such file or directory
+
+== cd, cd ~
+you're already home.
+
+== cd *
+cd: {args}: permission denied. you're a guest.
+
+== contact
+  github     [github.com/davorb](https://github.com/davorb)
+  email      [davor@davor.se](mailto:davor@davor.se)
+  app store  [coming soon]
+
+== github
+opening github.com/davorb ...
+@wait 400
+@open https://github.com/davorb
+
+== email, mail
+opening mail ...
+@wait 400
+@open mailto:davor@davor.se
+
+== sudo, sudo *
+guest is not in the sudoers file. this incident will be reported.
+@wait 700
+(it won't. nobody reads those.)
+
+== uptime
+up 17,000 days, 1 user, load average: 0.99 1.02 3.40
+(a steady hum, with a spike labeled "shipping")
+
+== ride
+checking weather ........
+@wait 900
+                  SWEDEN
+@wait 500
+ride postponed.
+
+== man *
+no manual entry for {args}
+
+== rm, rm *
+nice try.
+
+== vim, vi, nano, emacs
+entering {cmd}.
+@wait 900
+there is no exit.
+@wait 1200
+just kidding. you're out.
+
+== exit, logout, quit
+there is no outside.
+
+== coffee, tea
+error 418: I'm a teapot.
+
+== echo *
+{args}
+
+== hello, hi, hej
+hej.
+
+== *
+sh: {cmd}: command not found. try 'help'.
