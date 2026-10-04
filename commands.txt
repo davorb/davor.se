@@ -54,7 +54,7 @@ guest. davor is the other one.
 about.txt  projects/  photos/  bike/  todo.txt
 
 == ls projects, ls projects/, projects
-  milksy          baby tracker          [coming soon]
+  milksy          baby tracker          [milksy.app](https://milksy.app)
   image rewind    old photos, new eyes  [coming soon]
   travel app      where you've been     [working title]
 
