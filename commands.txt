@@ -56,7 +56,7 @@ about.txt  projects/  photos/  bike/  todo.txt
 == ls projects, ls projects/, projects
   milksy          baby tracker          [milksy.app](https://milksy.app)
   image rewind    old photos, new eyes  [coming soon]
-  travel app      where you've been     [working title]
+  lsl-experiment  1984, in the browser  [matrix.davor.se/lsl](https://matrix.davor.se/lsl)
 
 == ls photos, ls photos/, cd photos, cd photos/
 permission denied. ask nicely: [davor@davor.se](mailto:davor@davor.se)
