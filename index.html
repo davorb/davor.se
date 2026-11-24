@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./intro.js"></script>
 </head>
 <body>
 <x-dc>
@@ -15,7 +16,7 @@
 <template id="__bundler_thumbnail" data-bg-color="#010301"><svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="80" fill="#010301"></rect><text x="36" y="50" font-family="monospace" font-size="26" fill="#41ff72">&gt;</text><rect x="60" y="30" width="14" height="22" fill="#41ff72"></rect></svg></template>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=VT323&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&amp;family=Lekton:wght@700&amp;family=VT323&amp;display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;background:#000;color:#41ff72;-webkit-text-size-adjust:100%}
 a{color:#c8ffd2}a:hover{color:#010301}
@@ -133,14 +134,16 @@ a{color:#c8ffd2}a:hover{color:#010301}
     <div data-ln="end" onClick="{{ focusInput }}" style="position:relative; cursor:text;"><span style="color:#c8ffd2;">davor@davor.se:~$</span><span style="padding-left:1ch; white-space:pre-wrap;">{{ input }}</span>{{ cursor }}<input ref="{{ inputRef }}" value="{{ input }}" onChange="{{ onInput }}" onKeyDown="{{ onInputKey }}" aria-label="terminal command, type help" style="position:absolute; left:0; top:0; width:100%; height:100%; box-sizing:border-box; margin:0; padding:0; border:0; opacity:0; background:transparent; color:transparent; caret-color:transparent; font-size:16px; outline:none;"></div>
   </main>
 
-  <div ref="{{ coverRef }}" aria-hidden="true" style="display:none; position:fixed; inset:0; z-index:5; background:#000; overflow:hidden;">
+  <div ref="{{ coverRef }}" aria-hidden="true" style="display:none; position:fixed; inset:0; z-index:12; background:#000; overflow:hidden;">
     <canvas ref="{{ canvasRef }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
-    <div ref="{{ beamRef }}" style="position:absolute; inset:0; background:#cfffd9; opacity:0; transform:scale(0,0.003); box-shadow:0 0 40px 10px rgba(65,255,114,.7);"></div>
   </div>
   <div ref="{{ flashRef }}" aria-hidden="true" style="position:fixed; inset:0; z-index:9; background:#b8ffc8; opacity:0; pointer-events:none;"></div>
   {{ fx }}
+  <sc-if value="{{ film }}" hint-placeholder-val="{{ false }}">
+    <button ref="{{ soundRef }}" onClick="{{ toggleSound }}" style="position:fixed; z-index:13; left:calc(clamp(22px,4vw,56px) + env(safe-area-inset-left)); bottom:calc(clamp(18px,3vw,44px) + env(safe-area-inset-bottom)); background:none; border:none; padding:10px 4px; font:inherit; color:#23a847; text-shadow:inherit; cursor:pointer;" style-hover="color:#c8ffd2;">{{ soundLabel }}</button>
+  </sc-if>
   <sc-if value="{{ intro }}" hint-placeholder-val="{{ false }}">
-    <button onClick="{{ skip }}" style="position:fixed; z-index:8; right:calc(clamp(22px,4vw,56px) + env(safe-area-inset-right)); bottom:calc(clamp(18px,3vw,44px) + env(safe-area-inset-bottom)); background:none; border:none; padding:10px 4px; font:inherit; color:#23a847; text-shadow:inherit; cursor:pointer;" style-hover="color:#c8ffd2;">[ press any key to skip ]</button>
+    <button onClick="{{ skip }}" style="position:fixed; z-index:13; right:calc(clamp(22px,4vw,56px) + env(safe-area-inset-right)); bottom:calc(clamp(18px,3vw,44px) + env(safe-area-inset-bottom)); background:none; border:none; padding:10px 4px; font:inherit; color:#23a847; text-shadow:inherit; cursor:pointer;" style-hover="color:#c8ffd2;">[ press any key to skip ]</button>
   </sc-if>
 </div>
 </x-dc>
@@ -148,11 +151,11 @@ a{color:#c8ffd2}a:hover{color:#010301}
 const NOISE = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 1  0 0 0 0 .6  0 0 0 1.4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
 class Component extends DCLogic {
-  state = { typed: null, cmdCursor: null, intro: false, reduced: false, input: '', hist: [], live: false };
+  state = { typed: null, cmdCursor: null, intro: false, film: false, sound: false, reduced: false, input: '', hist: [], live: false };
   hist = []; cmdHistory = []; hIdx = 0; eid = 0; lid = 0;
   scrollbackRef = React.createRef(); inputRef = React.createRef();
   rootRef = React.createRef(); screenRef = React.createRef(); coverRef = React.createRef();
-  canvasRef = React.createRef(); beamRef = React.createRef(); flashRef = React.createRef();
+  canvasRef = React.createRef(); soundRef = React.createRef(); flashRef = React.createRef();
 
   componentDidMount() {
     this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -241,8 +244,9 @@ class Component extends DCLogic {
       case 'history': this.cmdHistory.forEach((c, i) => entry.lines.push(this.toLine(String(i + 1).padStart(4) + '  ' + c))); this.pushHist(); break;
       case 'matrix': {
         if (this.reduced) break;
-        this.skipped = false; const cover = this.coverRef.current;
-        cover.style.display = 'block'; await this.matrix(1300);
+        if (!window.MatrixIntro) break;
+        const cover = this.coverRef.current; cover.style.display = 'block';
+        await window.MatrixIntro.rain(this.canvasRef.current, 1300).done;
         cover.style.display = 'none'; this.flash(0.2, 500); break;
       }
       case 'reboot':
@@ -300,13 +304,20 @@ class Component extends DCLogic {
   rnd(a, b) { return a + Math.random() * (b - a); }
 
   cleanup() {
-    clearTimeout(this.timer); cancelAnimationFrame(this.raf);
+    clearTimeout(this.timer);
+    if (this.movie) { this.movie.stop(); this.movie = null; }
     window.removeEventListener('keydown', this.onKey);
     window.removeEventListener('pointerdown', this.onPointer);
     window.removeEventListener('wheel', this.onWheel);
   }
-  onKey = e => { if (['Shift','Control','Alt','Meta'].includes(e.key)) return; this.skip(); };
-  onPointer = () => this.skip();
+  onSound(e) { const b = this.soundRef.current; return !!b && b.contains(e.target); }
+  onKey = e => {
+    if (['Shift','Control','Alt','Meta'].includes(e.key)) return;
+    if ((e.key === 'Enter' || e.key === ' ') && this.onSound(e)) return;
+    this.skip();
+  };
+  onPointer = e => { if (!this.onSound(e)) this.skip(); };
+  toggleSound = () => { if (this.movie) this.setState({ sound: this.movie.setSound(!this.state.sound) }); };
   onWheel = () => { this.follow = false; };
 
   show(el, pop) {
@@ -328,8 +339,16 @@ class Component extends DCLogic {
     window.addEventListener('wheel', this.onWheel, { passive: true });
     const cover = this.coverRef.current; cover.style.display = 'block';
 
-    await this.matrix(1400); if (this.skipped) return;
-    await this.powerOn(); if (this.skipped) return;
+    if (window.MatrixIntro) {
+      // ?t=48 starts the intro 48 seconds in: handy when tuning a scene.
+      this.movie = window.MatrixIntro.play(this.canvasRef.current, { startAt: +new URLSearchParams(location.search).get('t') || 0 });
+      this.setState({ film: true, sound: false });
+      await this.movie.done; if (this.skipped) return;
+      this.setState({ film: false });
+      cover.style.display = 'none';
+      this.flash(1, 1600, '#f7faff');
+      await this.wait(650); if (this.skipped) return;
+    } else cover.style.display = 'none';
 
     for (const el of lines) {
       const kind = el.dataset.ln, p = el.dataset.p ? +el.dataset.p : null;
@@ -354,58 +373,9 @@ class Component extends DCLogic {
     this.finish();
   }
 
-  matrix(dur) {
-    return new Promise(res => {
-      const c = this.canvasRef.current, ctx = c.getContext('2d');
-      if (c.getAnimations) c.getAnimations().forEach(a => a.cancel());
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const W = c.width = window.innerWidth * dpr, H = c.height = window.innerHeight * dpr;
-      const fs = 16 * dpr, cols = Math.ceil(W / fs);
-      const drops = Array.from({ length: cols }, () => Math.floor(this.rnd(-25, 20)));
-      const chars = '01<>/\\|=+*#%$&:;ABCDEF0123456789';
-      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
-      ctx.font = `${fs}px VT323, monospace`;
-      let start = null, last = 0;
-      const frame = t => {
-        if (this.skipped) return;
-        if (start === null) start = t;
-        if (t - last > 42) {
-          last = t;
-          ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.fillRect(0, 0, W, H);
-          for (let i = 0; i < cols; i++) {
-            if (drops[i] < 0) { drops[i]++; continue; }
-            ctx.fillStyle = Math.random() < 0.08 ? '#d8ffe0' : '#2bd85a';
-            ctx.fillText(chars[(Math.random() * chars.length) | 0], i * fs, drops[i] * fs);
-            drops[i] = drops[i] * fs > H && Math.random() > 0.96 ? 0 : drops[i] + 1;
-          }
-        }
-        if (t - start >= dur) {
-          c.animate([{ opacity: 1, transform: 'none' }, { opacity: .6, transform: 'translateX(6px) skewX(2deg)', offset: .3 }, { opacity: 0, transform: 'scaleY(.02)' }], { duration: 260, fill: 'forwards' })
-            .finished.then(res);
-        } else this.raf = requestAnimationFrame(frame);
-      };
-      this.raf = requestAnimationFrame(frame);
-    });
-  }
-
-  async powerOn() {
-    const beam = this.beamRef.current, cover = this.coverRef.current;
-    if (beam.getAnimations) beam.getAnimations().forEach(a => a.cancel());
-    await this.wait(220);
-    await beam.animate([
-      { transform: 'scale(0,0.003)', opacity: 1 },
-      { transform: 'scale(1,0.003)', opacity: 1, offset: 0.4 },
-      { transform: 'scale(1,1)', opacity: 0.85, offset: 0.75 },
-      { transform: 'scale(1,1)', opacity: 0 }
-    ], { duration: 650, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' }).finished;
-    if (this.skipped) return;
-    cover.style.display = 'none';
-    this.flash(0.22, 600);
-    await this.wait(260);
-  }
-
-  flash(peak, dur) {
+  flash(peak, dur, color) {
     const f = this.flashRef.current; if (!f || !f.animate) return;
+    f.style.background = color || '#b8ffc8';
     f.animate([{ opacity: peak }, { opacity: 0 }], { duration: dur, easing: 'ease-out' });
   }
 
@@ -413,7 +383,7 @@ class Component extends DCLogic {
     this.cleanup();
     if (this.lines) this.lines.forEach(el => { el.style.display = el.dataset.d || ''; });
     if (this.coverRef.current) this.coverRef.current.style.display = 'none';
-    this.setState({ typed: null, cmdCursor: null, intro: false });
+    this.setState({ typed: null, cmdCursor: null, intro: false, film: false });
   }
   skip = () => { if (this.skipped || !this.state.intro) return; this.skipped = true; this.finish(); };
 
@@ -445,11 +415,13 @@ class Component extends DCLogic {
     const cc = this.state.cmdCursor;
     return {
       rootRef: this.rootRef, screenRef: this.screenRef, coverRef: this.coverRef,
-      canvasRef: this.canvasRef, beamRef: this.beamRef, flashRef: this.flashRef,
+      canvasRef: this.canvasRef, soundRef: this.soundRef, flashRef: this.flashRef,
       typed: this.state.typed ?? 'about davor',
       cmdCursor: cc ? this.cursorEl(cc, false) : null,
       cursor: this.cursorEl(this.state.live ? 'solid' : 'blink', false),
       busy: this.state.intro, intro: this.state.intro, skip: this.skip,
+      film: this.state.film, sound: this.state.sound, toggleSound: this.toggleSound,
+      soundLabel: this.state.sound ? '[ sound: on ]' : '[ sound: off ]',
       scrollbackRef: this.scrollbackRef, inputRef: this.inputRef, input: this.state.input,
       hist: this.state.hist, onInput: this.onInput, onInputKey: this.onInputKey,
       focusInput: this.focusInput, runHelp: this.runHelp,
